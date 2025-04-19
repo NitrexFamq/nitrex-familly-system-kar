@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Kary Nitrex Family</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f1117;
+      color: #fff;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .search-bar {
+      max-width: 500px;
+      margin: 0 auto 40px auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1em;
+      background-color: #1c1f26;
+      color: white;
+    }
+
+    .tier-title {
+      font-size: 1.5em;
+      margin: 30px 0 20px;
+      border-left: 4px solid #5c7cfa;
+      padding-left: 12px;
+    }
+
+    .penalty {
+      background-color: #1e2128;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.5);
+      transition: background-color 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .penalty:hover {
+      background-color: #282b33;
+    }
+
+    .penalty.selected {
+      background-color: #343a40;
+    }
+
+    .penalty-title {
+      font-size: 1.1em;
+      margin-bottom: 10px;
+    }
+
+    .penalty-footer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9em;
+      color: #aaa;
+      margin-top: 10px;
+    }
+
+    input[type="checkbox"] {
+      display: none;
+    }
+
+    .total-box {
+      background-color: #1c1f26;
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 1.3em;
+      text-align: center;
+      margin-top: 40px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    }
+
+    .total-box span {
+      color: #5c7cfa;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Kary Nitrex Family</h1>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Szukaj przewinienia...">
+  </div>
+
+  <div id="kary"></div>
+
+  <div class="total-box">
+    Łączna kwota do zapłaty: <span id="total">0</span>$
+  </div>
+
+  <script>
+    const data = [
+      {
+        tier: "TIER 1",
+        cost: 5000,
+        items: [
+          { name: "Brak aktywności 2 dni", desc: "Brak logowania lub aktywności IC przez 48h bez uprzedzenia" },
+          { name: "Nieobecność na captch", desc: "Nieuzasadniona nieobecność podczas zapowiedzianej wojnie" },
+          { name: "Nieoddanie kontraktów", desc: "Brak przekazania zysków z kontraktów do wspólnej puli" },
+          { name: "Ignorowanie poleceń", desc: "Brak reakcji lub wykonania jasno wydanych poleceń przez rangę wyższą" },
+          { name: "Nieprzestrzeganie harmonogramu", desc: "Nieobecność na obowiązkowych spotkaniach lub wydarzeniach IC" }
+        ]
+      },
+      {
+        tier: "TIER 2",
+        cost: 25000,
+        items: [
+          { name: "Kłamanie zarządowi", desc: "Podanie fałszywych informacji liderowi lub zarządowi rodziny" },
+          { name: "Obrażanie innych członków", desc: "Wulgarne lub toksyczne zachowanie wobec innego członka" },
+          { name: "Nieusprawiedliwiona nieobecność dłuższa niż 3 dni", desc: "Brak kontaktu i nieaktywność bez informacji" },
+          { name: "Niewywiązywanie się z obowiązków", desc: "Ciągłe ignorowanie przypisanych obowiązków IC/OOC" },
+          { name: "Złośliwe ignorowanie komunikacji", desc: "Celowe ignorowanie wiadomości prywatnych lub na Discordzie" },
+          { name: "Niedostosowanie się do dresscode", desc: "Nienoszenie ubrań rodzinnych podczas aktywnosci rodzinnych" }
+        ]
+      },
+      {
+        tier: "TIER 3",
+        cost: 100000,
+        items: [
+          { name: "Wynoszenie przedmiotów z magazynu", desc: "Kradzież IC rzeczy z magazynu bez zgody" },
+          { name: "Wynoszenie informacji poza rodzinę", desc: "Przekazywanie planów lub informacji obcym osobom" },
+          { name: "Udzielanie się w innych rodzinach bez zgody", desc: "Działanie w obcej rodzinie bez zgody zarządu" },
+          { name: "Ukrywanie ważnych informacji", desc: "Świadome zatajenie faktów istotnych dla rodziny" },
+          { name: "Współpraca z wrogą frakcją", desc: "IC/OOC współpraca z osobami działającymi na szkodę rodziny" }
+        ]
+      },
+      {
+        tier: "TIER 4",
+        cost: 250000,
+        items: [
+          { name: "Podburzanie członków", desc: "Namawianie do buntu, konfliktów lub złych nastrojów w rodzinie" },
+          { name: "Celowe sabotowanie działań rodziny", desc: "Aktywne działania szkodzące rodzinie podczas akcji" },
+          { name: "Zdrada lojalności", desc: "Współpraca z wrogami z premedytacją" },
+          { name: "Zgłaszanie rodziny bez podstaw", desc: "Bezpodstawne zgłoszenia do supportu/administracji" },
+          { name: "Ujawnienie poufnych rozmów z zarządem", desc: "Wynoszenie SS lub logów rozmów zarządu" }
+        ]
+      },
+      {
+        tier: "TIER 5",
+        cost: 0,
+        items: [
+          { name: "Podejrzenie o zdradę – rozmowa z liderem", desc: "Do rozpatrzenia przez lidera na podstawie dowodów" },
+          { name: "Konflikt między wyższymi rangami – decyzja lidera", desc: "Sprawa wymagająca rozmowy i oceny sytuacji" },
+          { name: "Zachowanie niepasujące do klimatu – ocena indywidualna", desc: "IC lub OOC zachowanie psujące immersję RP" }
+        ]
+      }
+    ];
+
+    const container = document.getElementById("kary");
+
+    function updateTotal() {
+      const checkboxes = document.querySelectorAll("input[type='checkbox']");
+      let total = 0;
+      checkboxes.forEach(cb => {
+        if (cb.checked && parseInt(cb.dataset.cost) > 0) {
+          total += parseInt(cb.dataset.cost);
+        }
+      });
+      document.getElementById("total").innerText = total.toLocaleString();
+    }
+
+    data.forEach((tier, tIndex) => {
+      const title = document.createElement("div");
+      title.className = "tier-title";
+      title.textContent = tier.tier;
+      container.appendChild(title);
+
+      tier.items.forEach((item, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "penalty";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `checkbox-${tIndex}-${index}`;
+        checkbox.dataset.cost = tier.cost;
+
+        const title = document.createElement("div");
+        title.className = "penalty-title";
+        title.innerHTML = `<strong>${item.name}</strong><br><small style="color: #999">${item.desc}</small>`;
+
+        const footer = document.createElement("div");
+        footer.className = "penalty-footer";
+        footer.innerHTML = `<span>${tier.tier}</span><span>${tier.cost > 0 ? tier.cost.toLocaleString() + "$" : "Do decyzji lidera"}</span>`;
+
+        wrapper.appendChild(checkbox);
+        wrapper.appendChild(title);
+        wrapper.appendChild(footer);
+
+        wrapper.addEventListener("click", () => {
+          checkbox.checked = !checkbox.checked;
+          wrapper.classList.toggle("selected", checkbox.checked);
+          updateTotal();
+        });
+
+        container.appendChild(wrapper);
+      });
+    });
+
+    document.getElementById("searchInput").addEventListener("input", function() {
+      const search = this.value.toLowerCase();
+      const penalties = document.querySelectorAll(".penalty");
+      penalties.forEach(penalty => {
+        const text = penalty.textContent.toLowerCase();
+        penalty.style.display = text.includes(search) ? "block" : "none";
+      });
+    });
+  </script>
+
+</body>
+</html>
